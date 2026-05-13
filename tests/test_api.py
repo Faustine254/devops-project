@@ -1,8 +1,12 @@
 import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 os.environ["DATABASE_URL"] = "sqlite:///test.db"
 
 import pytest
 from app.wsgi import app, db
+
 
 @pytest.fixture
 def client():
@@ -13,6 +17,7 @@ def client():
             db.create_all()
             yield client
             db.drop_all()
+
 
 def test_health(client):
     r = client.get("/health")
@@ -31,3 +36,9 @@ def test_get_tasks(client):
 def test_create_task_no_title(client):
     r = client.post("/api/tasks", json={})
     assert r.status_code == 400
+
+def test_delete_task(client):
+    create = client.post("/api/tasks", json={"title": "Delete me"})
+    task_id = create.get_json()["id"]
+    r = client.delete(f"/api/tasks/{task_id}")
+    assert r.status_code == 200
