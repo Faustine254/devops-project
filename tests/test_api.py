@@ -1,5 +1,4 @@
-import os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+import os
 os.environ["DATABASE_URL"] = "sqlite:///test.db"
 
 import pytest
